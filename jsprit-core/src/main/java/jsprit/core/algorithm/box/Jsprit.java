@@ -122,6 +122,8 @@ public class Jsprit {
 
         private ExecutorService es;
 
+        private JobNeighborhoods jobNeighborhoods = null;
+
         private Integer noThreads;
 
         private StateManager stateManager = null;
@@ -193,6 +195,11 @@ public class Jsprit {
         public Builder setExecutorService(ExecutorService es, int noThreads) {
             this.es = es;
             this.noThreads = noThreads;
+            return this;
+        }
+
+        public Builder setJobNeighborhoods(JobNeighborhoods jobNeighborhoods) {
+            this.jobNeighborhoods = jobNeighborhoods;
             return this;
         }
 
@@ -285,6 +292,8 @@ public class Jsprit {
 
     private ExecutorService es = null;
 
+    private JobNeighborhoods jobNeighborhoods = null;
+
     private Integer noThreads;
 
     private boolean setupExecutorInternally = false;
@@ -301,6 +310,7 @@ public class Jsprit {
         this.stateManager = builder.stateManager;
         this.constraintManager = builder.constraintManager;
         this.es = builder.es;
+        this.jobNeighborhoods = builder.jobNeighborhoods;
         this.noThreads = builder.noThreads;
         this.addCoreConstraints = builder.addConstraints;
         this.properties = builder.properties;
@@ -339,7 +349,9 @@ public class Jsprit {
         double noiseLevel = toDouble(getProperty(Parameter.INSERTION_NOISE_LEVEL.toString()));
         double noiseProbability = toDouble(getProperty(Parameter.INSERTION_NOISE_PROB.toString()));
 
-        JobNeighborhoods jobNeighborhoods = new JobNeighborhoodsFactory().createNeighborhoods(vrp, new AvgServiceAndShipmentDistance(vrp.getTransportCosts()), (int) (vrp.getJobs().values().size() * 0.5));
+        if (jobNeighborhoods == null) {
+            jobNeighborhoods = new JobNeighborhoodsFactory().createNeighborhoods(vrp, new AvgServiceAndShipmentDistance(vrp.getTransportCosts()), (int) (vrp.getJobs().values().size() * 0.5));
+        }
         jobNeighborhoods.initialise();
 
         final double maxCosts;
